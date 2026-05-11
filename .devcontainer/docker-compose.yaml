@@ -1,0 +1,7 @@
+services:
+  devcontainer:
+    build: .
+    container_name: devcontainer-features
+    tty: true
+    init: true
+  
