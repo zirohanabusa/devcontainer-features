@@ -1,0 +1,19 @@
+{
+    "id": "uv",
+    "version": "1.0.0",
+    "name": "uv",
+    "description": "Provides uv.",
+    "documentationURL": "https://github.com/zirohanabusa/devcontainer-features-gogcli/src/uv",
+    "licenseURL": "https://github.com/zirohanabusa/devcontainer-features-gogcli/src/uv/LICENSE",
+    "options": {
+        "UV_VERSION": {
+            "description": "Version of uv to install.",
+            "type": "string",
+            "default": "latest",
+            "proposals": [
+                "latest",
+                "0.11.21"
+            ]
+        }
+    }
+}
