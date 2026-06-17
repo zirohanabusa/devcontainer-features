@@ -1,0 +1,19 @@
+{
+    "id": "shellcheck",
+    "version": "1.0.0",
+    "name": "shellcheck",
+    "description": "Provides shellcheck.",
+    "documentationURL": "https://github.com/zirohanabusa/devcontainer-features-gogcli/src/shellcheck",
+    "licenseURL": "https://github.com/zirohanabusa/devcontainer-features-gogcli/src/shellcheck/LICENSE",
+    "options": {
+        "SHELLCHECK_VERSION": {
+            "description": "Version of shellcheck to install.",
+            "type": "string",
+            "default": "latest",
+            "proposals": [
+                "latest",
+                "0.11.0",
+            ]
+        }
+    }
+}
