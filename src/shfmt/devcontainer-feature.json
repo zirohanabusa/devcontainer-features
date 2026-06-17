@@ -1,0 +1,19 @@
+{
+    "id": "shfmt",
+    "version": "1.0.0",
+    "name": "shfmt",
+    "description": "Provides shfmt.",
+    "documentationURL": "https://github.com/zirohanabusa/devcontainer-features-gogcli/src/shfmt",
+    "licenseURL": "https://github.com/zirohanabusa/devcontainer-features-gogcli/src/shfmt/LICENSE",
+    "options": {
+        "SHFMT_VERSION": {
+            "description": "Version of shfmt to install.",
+            "type": "string",
+            "default": "latest",
+            "proposals": [
+                "latest",
+                "3.13.1",
+            ]
+        }
+    }
+}
