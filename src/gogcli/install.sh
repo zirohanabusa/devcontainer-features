@@ -1,8 +1,8 @@
 #!/bin/bash
-set -eu
+set -euo pipefail
 
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
-GOGVERSION="${GOGVERSION:-latest}"
+GOG_VERSION="${GOG_VERSION:-"latest"}"
 
 # The install.sh script is the installation entrypoint for any dev container 'features' in this repository. 
 #
@@ -10,9 +10,11 @@ GOGVERSION="${GOGVERSION:-latest}"
 # any build-time arguments into a feature-set scoped "devcontainer-features.env"
 # The author is free to source that file and use it however they would like.
 set -a
-. ./devcontainer-features.env
+#. ./devcontainer-features.env
 set +a
 
+REPO_OWNER="openclaw"
+REPO_NAME="gogcli"
 ARCH="$(uname -m)"
 case ${ARCH} in
     x86_64) ARCH="amd64";;
@@ -20,26 +22,25 @@ case ${ARCH} in
     *) echo "(!) Architecture ${ARCH} unsupported"; exit 1 ;;
 esac
 
-case ${GOGVERSION} in
-    latest) GOGVERSION="0.16.0" ;;
-    0.16.0 | 0.15.0 | 0.14.0 | 0.13.0 | 0.12.0 | 0.11.0 | 0.10.0 | 0.9.0 | 0.8.0 | 0.7.0) : ;;
-    *) echo "(!) Unknown gog version ${GOGVERSION}"; exit 1;;
-esac
-
-WORK_DIR="gogcli_${GOGVERSION}_linux_${ARCH}"
-ARCHIVE_FILENAME="${WORK_DIR}.tar.gz"
-DOWNLOAD_URL="https://github.com/openclaw/gogcli/releases/download/v${GOGVERSION}/${ARCHIVE_FILENAME}"
-TMP_WORK_DIR=$(mktemp -d)
+RELEASES_LATEST_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest"
 (
   : \
   && apt-get update \
-  && apt-get install -y ca-certificates curl tar gzip \
+  && apt-get install -y --no-install-recommends coreutils ca-certificates curl jq tar gzip \
+  && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
+  && TMP_WORK_DIR=$(mktemp -d) \
   && cd "$TMP_WORK_DIR" \
-  && curl -LO "$DOWNLOAD_URL" \
-  && tar xvfz "$ARCHIVE_FILENAME" \
+  && JSON_STRING=$(curl -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2026-03-10" -LSs "$RELEASES_LATEST_URL") \
+  && LATEST_ITEM=$(echo "$JSON_STRING" | jq -r ".assets[] | select(.name | contains(\"_linux_${ARCH}.\"))") \
+  && DOWNLOAD_URL=$(echo "$LATEST_ITEM" | jq -r ".browser_download_url") \
+  && DIGEST=$(echo "$LATEST_ITEM" | jq -r '.digest |= sub("sha256:"; "") | .digest') \
+  && curl -LSs -o archive.tar.gz "$DOWNLOAD_URL" \
+  && echo "${DIGEST}  archive.tar.gz" > checksums.txt \
+  && sha256sum -c checksums.txt \
+  && tar xfv archive.tar.gz \
   && chmod +x gog \
   && mv gog /usr/local/bin/ \
   && cd - \
-  && rm -rf "$TMP_WORK_DIR";
+  && rm -rf "$TMP_WORK_DIR"
 ) || exit -1
