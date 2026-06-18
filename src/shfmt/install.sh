@@ -46,22 +46,3 @@ RELEASES_LATEST_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/rel
   && cd - \
   && rm -rf "$TMP_WORK_DIR"
 ) || exit -1
-
-
-
-
-#if [ $SHFMT_VERSION = 'latest' ]
-#then
-#    RELEASES_LATEST_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest"
-#    JSON_STRING=$(curl -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2026-03-10" -LSs "$RELEASES_LATEST_URL")
-#    LATEST_ITEM=$(echo "$JSON_STRING" | jq -r ".assets[] | select(.name | contains(\"_linux_${ARCH}\"))")
-#    DOWNLOAD_URL=$(echo "$LATEST_ITEM" | jq -r ".browser_download_url")
-#    DIGEST=$(echo "$LATEST_ITEM" | jq -r ".digest")
-#    echo "${DIGEST}  ${CMD_NAME}" > checksums.txt
-#    curl -LSs -o "$CMD_NAME" "$DOWNLOAD_URL"
-#    # sha256sum -c checksums.txt
-#    cp -p "$CMD_NAME" "/usr/local/bin/$CMD_NAME"
-#else
-#    RELEASES_LIST_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases"
-#    curl -SsL "$RELEASES_LIST_URL" | jq -C | less -R
-#fi
